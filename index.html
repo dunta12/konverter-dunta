@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Konverter Dunta</title>
+<meta name="description" content="Konverter Dunta - HTML, teks, Markdown, foto, dan halaman web menjadi PDF.">
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+<style id="pageStyle">@page{size:A5;margin:16mm 14mm 18mm}</style>
+</head>
+<body>
+
+<section id="screenHome" class="screen active">
+  <div class="home ui">
+    <img src="icon.svg" alt="logo" class="logo">
+    <h1>📄 Konverter <span>Dunta</span></h1>
+    <p data-i18n="tagline">Ubah HTML, teks, Markdown, foto, atau halaman web menjadi PDF yang cantik.</p>
+    <button class="installbtn js-install" onclick="pasang()" data-i18n="install" hidden>⬇ Install Aplikasi</button>
+    <div class="cards">
+      <button class="cardbtn" onclick="masuk('code')"><span class="cicon">📋</span><span><b data-i18n="cardCode">Tempel Kode</b><br><small data-i18n="cardCodeDesc">HTML / Markdown / teks</small></span></button>
+      <button class="cardbtn" onclick="masuk('file')"><span class="cicon">📁</span><span><b data-i18n="cardFile">Upload File</b><br><small data-i18n="cardFileDesc">HTML • TXT • MD • SVG • foto</small></span></button>
+      <button class="cardbtn" onclick="masuk('url')"><span class="cicon">🌐</span><span><b data-i18n="cardUrl">Dari URL</b><br><small data-i18n="cardUrlDesc">Artikel & halaman web</small></span></button>
+    </div>
+    <p class="hint steps" data-i18n="steps">Alur: 1) Input → 2) Pratinjau → 3) Simpan PDF</p>
+  </div>
+</section>
+
+<section id="screenInput" class="screen">
+  <div class="ui">
+    <h2 class="screentitle" data-i18n="inputTitle">Input</h2>
+    <div class="tabs">
+      <button id="tabCode" class="active" onclick="pilihTab('code')" data-i18n="tabCode">Tempel Kode</button>
+      <button id="tabFile" onclick="pilihTab('file')" data-i18n="tabFile">Upload File</button>
+      <button id="tabUrl" onclick="pilihTab('url')" data-i18n="tabUrl">Dari URL</button>
+    </div>
+    <div id="panelCode">
+      <textarea id="kode" data-i18n-ph="ph" placeholder="Tempel kode HTML di sini..."></textarea>
+    </div>
+    <div id="panelFile" style="display:none">
+      <div class="filebox">
+        <label for="file" data-i18n="fileLabel">PILIH FILE</label>
+        <input type="file" id="file" accept=".html,.htm,.txt,.md,.markdown,.svg,.jpg,.jpeg,.png" multiple>
+        <p class="hint" data-i18n="fileHint">HTML • TXT • Markdown • SVG • JPG/PNG</p>
+        <p id="namaFile"></p>
+      </div>
+    </div>
+    <div id="panelUrl" style="display:none">
+      <div class="urlbox">
+        <input type="url" id="url" data-i18n-ph="urlPh" placeholder="https://contoh.com/artikel">
+        <button id="btnUrl" onclick="ambilUrl()" data-i18n="urlBtn">Ambil</button>
+      </div>
+      <p id="statusUrl" class="hint"></p>
+    </div>
+    <div class="actions">
+      <select id="ukuran" onchange="gantiUkuran()">
+        <option value="A5" data-i18n="optA5">📏 A5 (Buku)</option>
+        <option value="A4" data-i18n="optA4">📏 A4 (Dokumen)</option>
+        <option value="letter" data-i18n="optLetter">📏 Letter</option>
+      </select>
+      <select id="gaya" onchange="pratinjau()">
+        <option value="buku" data-i18n="gayaBuku">📖 Gaya Buku</option>
+        <option value="asli" data-i18n="gayaAsli">🎨 Gaya Asli</option>
+      </select>
+      <button id="btnProses" class="wide" onclick="proses()" data-i18n="proses">➡ Proses</button>
+    </div>
+  </div>
+</section>
+
+<section id="screenPreview" class="screen">
+  <div class="ui">
+    <h2 class="screentitle" data-i18n="previewTitle">Pratinjau & PDF</h2>
+    <p id="emptyPrev" class="hint" style="display:none" data-i18n="emptyPrev">Belum ada pratinjau. Proses dulu dari layar Input.</p>
+    <div class="prevactions">
+      <button id="btnPdf" onclick="jadikanPdf()" data-i18n="pdf">📄 PDF</button>
+      <button id="btnBack" onclick="bukaLayar('input')" data-i18n="editBack">✏ Kembali Edit</button>
+    </div>
+  </div>
+  <div id="book"></div>
+  <iframe id="frame" title="preview" hidden></iframe>
+  <!-- ═══ SLOT IKLAN ═══ Saat monetisasi: tempel kode AdSense DI DALAM div ini. Tidak ikut tercetak ke PDF. -->
+  <div id="ad-slot" class="ui"></div>
+</section>
+
+<section id="screenMore" class="screen">
+  <div class="ui">
+    <h2 class="screentitle" data-i18n="navMore">Lainnya</h2>
+    <div class="morelist">
+      <div class="morerow">
+        <span data-i18n="moreLang">Bahasa</span>
+        <span>
+          <button id="btnID" class="langbtn active" onclick="setLang('id')">ID</button>
+          <button id="btnEN" class="langbtn" onclick="setLang('en')">EN</button>
+        </span>
+      </div>
+      <button class="morerow" onclick="bukaModal('modalPrivasi')"><span data-i18n="mPrivasi">🔒 Kebijakan Privasi</span></button>
+      <button class="morerow" onclick="bukaModal('modalTentang')"><span data-i18n="mTentang">ℹ️ Tentang</span></button>
+      <button class="morerow" onclick="bagikan()"><span data-i18n="mBagikan">📤 Bagikan Aplikasi</span></button>
+      <button class="morerow js-install" onclick="pasang()" hidden><span data-i18n="install">⬇ Install Aplikasi</span></button>
+      <p class="hint version" data-i18n="version">Versi 3.0.0</p>
+    </div>
+  </div>
+</section>
+
+<nav id="bottomNav" class="ui">
+  <button class="navbtn active" id="navHome" onclick="bukaLayar('home')"><span>🏠</span><small data-i18n="navHome">Beranda</small></button>
+  <button class="navbtn" id="navInput" onclick="bukaLayar('input')"><span>📥</span><small data-i18n="navInput">Input</small></button>
+  <button class="navbtn" id="navPreview" onclick="bukaLayar('preview')"><span>👁</span><small data-i18n="navPreview">Pratinjau</small></button>
+  <button class="navbtn" id="navMore" onclick="bukaLayar('more')"><span>⚙️</span><small data-i18n="navMore">Lainnya</small></button>
+</nav>
+
+<div id="modalPrivasi" class="modal ui" onclick="if(event.target===this)tutupModal('modalPrivasi')">
+  <div class="card">
+    <h3 data-i18n="privTitle">Kebijakan Privasi</h3>
+    <p data-i18n="priv1">Konverter Dunta memproses semua file langsung di perangkat Anda. Kode, dokumen, dan foto Anda tidak diunggah ke server mana pun.</p>
+    <p data-i18n="priv2">Aplikasi tidak mengumpulkan atau membagikan data pribadi. Jika iklan diaktifkan di kemudian hari, penyedia iklan (mis. Google AdSense) dapat menggunakan cookie sesuai kebijakan mereka sendiri.</p>
+    <button class="closebtn" onclick="tutupModal('modalPrivasi')" data-i18n="close">Tutup</button>
+  </div>
+</div>
+
+<div id="modalTentang" class="modal ui" onclick="if(event.target===this)tutupModal('modalTentang')">
+  <div class="card">
+    <h3 data-i18n="aboutTitle">Tentang</h3>
+    <p data-i18n="about1">Konverter Dunta v3.0.0
+Mengubah HTML, teks, Markdown, foto, dan halaman web menjadi PDF yang cantik.
+Dibuat dengan ❤ oleh Dunta.</p>
+    <button class="closebtn" onclick="tutupModal('modalTentang')" data-i18n="close">Tutup</button>
+  </div>
+</div>
+
+<div id="toast" class="ui"></div>
+<script src="script.js"></script>
+</body>
+</html>
