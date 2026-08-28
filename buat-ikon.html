@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pembuat Aset - Konverter Dunta</title>
+<style>
+body{font-family:sans-serif;background:#0f172a;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90vh;margin:0;text-align:center;padding:16px}
+a{display:block;background:#f5c518;color:#111;font-weight:bold;padding:12px 26px;border-radius:12px;margin:8px;text-decoration:none}
+p{color:#94a3b8}
+</style>
+</head>
+<body>
+<h1>🎨 Pabrik Aset</h1>
+<p>Ketuk lima tombol ini, lalu upload semua hasilnya ke GitHub.</p>
+<a id="d512" download="icon-512.png">⬇ icon-512.png</a>
+<a id="d192" download="icon-192.png">⬇ icon-192.png</a>
+<a id="d96" download="icon-96.png">⬇ icon-96.png</a>
+<a id="sN" download="shot-narrow.png">⬇ shot-narrow.png</a>
+<a id="sW" download="shot-wide.png">⬇ shot-wide.png</a>
+<script>
+var svg='<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#0f172a"/><rect x="126" y="86" width="200" height="260" rx="16" fill="#ffffff"/><path d="M266 86 l60 60 h-60 z" fill="#cbd5e1"/><rect x="150" y="150" width="120" height="14" rx="7" fill="#94a3b8"/><rect x="150" y="186" width="150" height="14" rx="7" fill="#94a3b8"/><rect x="150" y="222" width="100" height="14" rx="7" fill="#94a3b8"/><path d="M216 300 h130 m0 0 l-36 -36 m36 36 l-36 36" stroke="#f5c518" stroke-width="28" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="256" y="452" font-family="Arial, sans-serif" font-size="92" font-weight="bold" fill="#f5c518" text-anchor="middle">PDF</text></svg>';
+function ikon(u,id){
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement('canvas');c.width=u;c.height=u;
+    c.getContext('2d').drawImage(img,0,0,u,u);
+    document.getElementById(id).href=c.toDataURL('image/png');
+  };
+  img.src='data:image/svg+xml;base64,'+btoa(svg);
+}
+function shot(w,h,id){
+  var c=document.createElement('canvas');c.width=w;c.height=h;
+  var x=c.getContext('2d');
+  x.fillStyle='#0f172a';x.fillRect(0,0,w,h);
+  var s=Math.min(w,h);
+  x.textAlign='center';
+  x.fillStyle='#f5c518';x.font='bold '+Math.round(s*0.06)+'px sans-serif';
+  x.fillText('Konverter Dunta',w/2,h*0.16);
+  x.fillStyle='#94a3b8';x.font=Math.round(s*0.03)+'px sans-serif';
+  x.fillText('HTML - TXT - Markdown - foto menjadi PDF',w/2,h*0.21);
+  for(var i=0;i<3;i++){
+    var y=h*0.30+i*h*0.15;
+    x.fillStyle='#1e293b';x.fillRect(w*0.12,y,w*0.76,h*0.11);
+    x.fillStyle='#f5c518';x.fillRect(w*0.16,y+h*0.035,w*0.05,h*0.04);
+    x.fillStyle='#e2e8f0';x.fillRect(w*0.25,y+h*0.035,w*0.4,h*0.015);
+    x.fillStyle='#64748b';x.fillRect(w*0.25,y+h*0.06,w*0.3,h*0.012);
+  }
+  x.fillStyle='#f5c518';x.fillRect(w*0.12,h*0.80,w*0.76,h*0.07);
+  document.getElementById(id).href=c.toDataURL('image/png');
+}
+ikon(512,'d512');ikon(192,'d192');ikon(96,'d96');
+shot(1080,1920,'sN');
+shot(1920,1080,'sW');
+</script>
+</body>
+</html>
