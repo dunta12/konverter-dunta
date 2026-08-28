@@ -1,26 +1,20 @@
-const CACHE = 'kd-v4';
-
-self.addEventListener('install', e => {
-  self.skipWaiting();
+/* sw.js — Konverter Dunta v6: network-first, cache hanya offline */
+var CACHE='kd-v6';
+var CORE=['./','index.html','text.js','book.js','files.js','save.js','app.js','manifest.json','icon.svg','icon-192.png','icon-512.png'];
+self.addEventListener('install',function(e){
+e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(CORE);}).then(function(){return self.skipWaiting();}));
 });
-
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys()
-      .then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+self.addEventListener('activate',function(e){
+e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));}).then(function(){return self.clients.claim();}));
 });
-
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
-  e.respondWith(
-    fetch(e.request)
-      .then(r => {
-        const cp = r.clone();
-        caches.open(CACHE).then(c => c.put(e.request, cp)).catch(() => {});
-        return r;
-      })
-      .catch(() => caches.match(e.request))
-  );
+self.addEventListener('fetch',function(e){
+var req=e.request;
+if(req.method!=='GET')return;
+var url=new URL(req.url);
+if(url.origin!==location.origin)return;
+if(req.mode==='navigate'){
+e.respondWith(fetch(req).then(function(res){var cp=res.clone();caches.open(CACHE).then(function(c){c.put(req,cp);});return res;}).catch(function(){return caches.match(req).then(function(r){return r||caches.match('index.html');});}));
+return;
+}
+e.respondWith(fetch(req).then(function(res){var cp=res.clone();caches.open(CACHE).then(function(c){c.put(req,cp);});return res;}).catch(function(){return caches.match(req);}));
 });
