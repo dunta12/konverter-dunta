@@ -21,7 +21,9 @@ h2{color:var(--yel);font-size:20px;margin:14px 0 8px}
 .tabs{display:flex;gap:8px;margin:10px 0}.tabs button{flex:1;background:var(--card);border:0;color:var(--mut);padding:13px 2px;border-radius:12px;font-weight:800;font-size:12px}
 .tabs button.active{background:var(--yel);color:#111}
 .panel{background:var(--card);border:1px dashed #475569;border-radius:14px;padding:14px;margin:10px 0}
-textarea{width:100%;min-height:160px;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:monospace;font-size:13px}
+#p-paste{background:none;border:0;padding:0}
+#code{width:100%;min-height:58vh;background:#fff;color:#222;border:0;border-radius:8px;padding:20px 18px;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.9;box-shadow:0 3px 14px rgba(0,0,0,.45)}
+#code.codemode{background:var(--bg);color:var(--txt);font-family:monospace;font-size:13px;line-height:1.6}
 input[type=url],input[type=text]{width:100%;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:13px;font-size:14px}
 .ybtn{display:block;width:100%;background:var(--yel);color:#111;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:800;margin:12px 0}
 .ybtn:disabled{opacity:.5}
@@ -42,47 +44,65 @@ nav button.active{color:var(--yel)}nav button div{font-size:20px}
 .filesec h3{color:#333;border-bottom:1px solid #ccc;padding-bottom:6px}
 .hidden{display:none}
 .hint{color:var(--mut);font-size:12px;margin-top:6px}
+#wcount{color:var(--mut);font-size:12px;margin-top:6px}
+#fsBar{display:none;position:fixed;top:0;left:0;right:0;z-index:70;background:#16202f;padding:10px 12px;align-items:center;border-bottom:1px solid var(--line)}
+#fsCount{color:var(--mut);font-size:12px;flex:1;text-align:right}
+body.fs header,body.fs nav{display:none}
+body.fs main{padding:0}
+body.fs .nofs{display:none!important}
+body.fs #fsBar{display:flex}
+body.fs #p-paste{margin:0}
+body.fs #code{position:fixed;top:52px;left:0;right:0;bottom:0;height:auto;min-height:0;border-radius:0;box-shadow:none;padding:20px 16px 70px}
 #toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#16a34a;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:99;max-width:86%;text-align:center}
 #toast.show{opacity:1}#toast.err{background:#dc2626}
 </style>
 </head>
 <body>
+<div id="fsBar"><button class="gbtn" onclick="fsOff()">✅ Selesai</button><span id="fsCount"></span></div>
 <header>📄 Konverter <span>Dunta</span></header>
 <main>
-<section id="pg-home" class="page active">
+<section id="pg-home" class="page active nofs">
 <h2>Beranda</h2>
 <p style="color:var(--mut)">Ubah HTML, teks, Markdown, foto (boleh banyak), atau halaman web menjadi PDF rapi.</p>
 <button class="cardbtn" onclick="go('input')"><b>📥 Mulai Konversi</b><small>Tempel kode • unggah file/foto • dari URL</small></button>
 <button class="cardbtn" onclick="go('preview')"><b>👁 Pratinjau Terakhir</b><small>Lihat / simpan hasil proses</small></button>
-<p class="hint">💾 Draf teks tersimpan otomatis di perangkat ini — tertutup tidak sengaja pun aman.</p>
+<p class="hint">💾 Draf teks tersimpan otomatis — tertutup tidak sengaja pun aman.</p>
 </section>
 <section id="pg-input" class="page">
-<h2>Input</h2>
-<div class="tabs">
+<h2 class="nofs">Input</h2>
+<div class="tabs nofs">
 <button id="t-paste" class="active" onclick="tab('paste')">Tempel Kode</button>
 <button id="t-file" onclick="tab('file')">Unggah File</button>
 <button id="t-url" onclick="tab('url')">Dari URL</button>
 </div>
-<div id="p-paste" class="panel"><textarea id="code" placeholder="Tempel HTML / Markdown / teks di sini…"></textarea><div class="hint">💾 Tersimpan otomatis saat mengetik.</div></div>
-<div id="p-file" class="panel hidden">
+<div id="p-paste" class="panel">
+<textarea id="code" placeholder="Mulai menulis di sini… seperti di Word: kertas putih, luas, dan tenang."></textarea>
+<div class="edbtns nofs">
+<button class="gbtn" id="btnMode" onclick="toggleMode()">💻 Mode Kode</button>
+<button class="gbtn" onclick="fsOn()">⛶ Layar Penuh</button>
+</div>
+<div id="wcount" class="nofs">0 kata • 0 karakter</div>
+<div class="hint nofs">💾 Tersimpan otomatis saat mengetik.</div>
+</div>
+<div id="p-file" class="panel hidden nofs">
 <label class="ybtn" style="width:auto;display:inline-block;padding:14px 26px" for="file">📁 PILIH FILE</label>
 <input type="file" id="file" class="hidden" multiple accept=".html,.htm,.txt,.md,.svg,image/png,image/jpeg">
 <div id="flist"><em>Belum ada file. Foto boleh lebih dari satu → tiap foto jadi 1 halaman. Foto dikompres otomatis agar PDF ringan.</em></div>
 <button class="gbtn" onclick="resetFiles()">🗑 Hapus Semua File</button>
 </div>
-<div id="p-url" class="panel hidden">
+<div id="p-url" class="panel hidden nofs">
 <input type="url" id="url" placeholder="https://contoh.com/artikel">
 <div class="hint">Mesin "Mode Baca" mengambil isi artikel bersih tanpa iklan, dengan 2 server cadangan otomatis.</div>
 </div>
-<div class="row">
+<div class="row nofs">
 <select id="size"><option value="a4">📏 A4</option><option value="a5" selected>📏 A5 (Buku)</option></select>
 <select id="style"><option value="book" selected>📖 Gaya Buku</option><option value="plain">📄 Polos</option></select>
 </div>
-<div class="hint">Gaya Buku = huruf serif rapi + nomor halaman di tiap halaman PDF.</div>
-<div id="status"></div>
-<button id="btnProcess" class="ybtn" onclick="process()">➡ Proses</button>
+<div class="hint nofs">Gaya Buku = huruf serif rapi + nomor halaman di tiap halaman PDF.</div>
+<div id="status" class="nofs"></div>
+<button id="btnProcess" class="ybtn nofs" onclick="process()">➡ Proses</button>
 </section>
-<section id="pg-preview" class="page">
+<section id="pg-preview" class="page nofs">
 <h2>Pratinjau</h2>
 <div id="status2"></div>
 <button class="gbtn" onclick="go('input')">← Kembali / Ganti Input</button>
@@ -92,11 +112,11 @@ nav button.active{color:var(--yel)}nav button div{font-size:20px}
 <button id="btnSave" class="ybtn" onclick="savePDF()">💾 Simpan PDF (langsung unduh)</button>
 <div id="pvWrap"><em style="color:#666">Belum ada pratinjau. Isi input lalu tekan Proses.</em></div>
 </section>
-<section id="pg-more" class="page">
+<section id="pg-more" class="page nofs">
 <h2>Lainnya</h2>
 <button class="cardbtn" onclick="hardReload()"><b>🔄 Muat Ulang Aplikasi</b><small>Terapkan pembaruan dari GitHub</small></button>
 <button class="cardbtn" onclick="clearAll()"><b>🧹 Hapus Semua Data</b><small>Reset input, draf & pratinjau</small></button>
-<p style="color:var(--mut);font-size:13px">Konverter Dunta v4 — draf autosave • tombol kembali Android = mundur layar • nama PDF bebas • nomor halaman & anti-potong baris • foto dikompres otomatis • full Bahasa Indonesia.</p>
+<p style="color:var(--mut);font-size:13px">Konverter Dunta v4.1 — editor kertas putih ala Word • layar penuh • hitung kata • autosave • back Android = mundur • nama PDF bebas • nomor halaman • foto dikompres.</p>
 </section>
 </main>
 <nav>
@@ -127,7 +147,12 @@ var draftT;function queueDraft(){clearTimeout(draftT);draftT=setTimeout(function
 function loadDraft(){try{var d=JSON.parse(localStorage.getItem('kd-draft')||'{}');if(d.code)$('code').value=d.code;if(d.url)$('url').value=d.url;if(d.size)$('size').value=d.size;if(d.style)$('style').value=d.style;}catch(e){}}
 ['code','url'].forEach(function(id){$(id).addEventListener('input',queueDraft);});
 ['size','style'].forEach(function(id){$(id).addEventListener('change',queueDraft);});
-function clearAll(){contentHTML='';imageList=[];resetFiles();$('code').value='';$('url').value='';$('fnameOut').value='';try{localStorage.removeItem('kd-draft');}catch(e){}$('pvWrap').innerHTML='<em style="color:#666">Belum ada pratinjau.</em>';setStatus('');go('home');toast('🧹 Semua data dibersihkan');}
+function updCount(){var v=$('code').value;var w=v.trim()?v.trim().split(/\s+/).length:0;var s=w+' kata • '+v.length+' karakter';$('wcount').textContent=s;$('fsCount').textContent=s;}
+$('code').addEventListener('input',updCount);
+function toggleMode(){var on=$('code').classList.toggle('codemode');$('btnMode').textContent=on?'✍️ Mode Tulis':'💻 Mode Kode';}
+function fsOn(){document.body.classList.add('fs');updCount();$('code').focus();}
+function fsOff(){document.body.classList.remove('fs');}
+function clearAll(){contentHTML='';imageList=[];resetFiles();$('code').value='';$('url').value='';$('fnameOut').value='';try{localStorage.removeItem('kd-draft');}catch(e){}$('pvWrap').innerHTML='<em style="color:#666">Belum ada pratinjau.</em>';setStatus('');updCount();go('home');toast('🧹 Semua data dibersihkan');}
 function hardReload(){toast('🔄 Memuat ulang…');if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.update();});});}setTimeout(function(){location.reload(true);},900);}
 function sanitize(h){return window.DOMPurify?DOMPurify.sanitize(h):h;}
 function wrap(b){return $('style').value==='book'?'<div style="font-family:Georgia,serif;font-size:15px;line-height:1.8;text-align:justify">'+b+'</div>':'<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6">'+b+'</div>';}
@@ -201,7 +226,7 @@ setStatus('✅ PDF tersimpan: '+name);toast('✅ PDF tersimpan di Download');
 }catch(e){setStatus('❌ '+(e&&e.message?e.message:'Gagal menyimpan PDF. Coba lagi.'));toast('❌ Gagal menyimpan PDF');}
 finally{setBusy(false);}
 }
-loadDraft();tab('paste');
+loadDraft();updCount();tab('paste');
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
 </script>
 </body>
