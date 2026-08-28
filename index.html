@@ -2,139 +2,136 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Konverter Dunta</title>
-<meta name="description" content="Konverter Dunta - HTML, teks, Markdown, foto, dan halaman web menjadi PDF.">
-<meta name="theme-color" content="#0f172a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📄 Konverter Dunta</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="styles.css">
-<style id="pageStyle">@page{size:A5;margin:16mm 14mm 18mm}</style>
+<link rel="icon" href="icon.svg">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+<style>
+:root{--bg:#0d1521;--card:#1e293b;--line:#334155;--txt:#e2e8f0;--mut:#94a3b8;--yel:#eab308}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,Segoe UI,Roboto,sans-serif;padding-bottom:80px}
+header{position:sticky;top:0;background:#0d1521f0;padding:14px 16px;font-size:20px;font-weight:800;z-index:5}header span{color:var(--yel)}
+main{padding:0 14px}.page{display:none}.page.active{display:block}
+h2{color:var(--yel);font-size:20px;margin:14px 0 8px}
+.cardbtn{display:block;width:100%;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:14px;padding:14px;margin:10px 0;text-align:left;font-size:15px}
+.cardbtn b{display:block;font-size:16px}.cardbtn small{color:var(--mut)}
+.tabs{display:flex;gap:8px;margin:10px 0}.tabs button{flex:1;background:var(--card);border:0;color:var(--mut);padding:13px 2px;border-radius:12px;font-weight:800;font-size:13px}
+.tabs button.active{background:var(--yel);color:#111}
+.panel{background:var(--card);border:1px dashed #475569;border-radius:14px;padding:14px;margin:10px 0}
+textarea{width:100%;min-height:160px;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:monospace;font-size:13px}
+input[type=url]{width:100%;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:13px;font-size:14px}
+.ybtn{display:block;width:100%;background:var(--yel);color:#111;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:800;margin:12px 0}
+.gbtn{display:inline-block;background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13px;margin:4px 4px 4px 0}
+select{background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:14px;width:48%}
+.row{display:flex;gap:8px}
+#status,#status2{margin:8px 0;color:var(--yel);font-size:14px;min-height:18px}
+#fname{color:var(--mut);font-size:13px;margin-top:8px;word-break:break-all}
+nav{position:fixed;bottom:0;left:0;right:0;background:#16202f;display:flex;border-top:1px solid var(--line)}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 12px;font-size:12px}
+nav button.active{color:var(--yel)}nav button div{font-size:20px}
+#pvWrap{background:#fff;color:#111;border-radius:12px;padding:18px;margin:10px 0;line-height:1.6;word-wrap:break-word}
+#pvWrap img{max-width:100%}
+.hidden{display:none}
+</style>
 </head>
 <body>
-
-<section id="screenHome" class="screen active">
-  <div class="home ui">
-    <img src="icon.svg" alt="logo" class="logo">
-    <h1>📄 Konverter <span>Dunta</span></h1>
-    <p data-i18n="tagline">Ubah HTML, teks, Markdown, foto, atau halaman web menjadi PDF yang cantik.</p>
-    <button class="installbtn js-install" onclick="pasang()" data-i18n="install" hidden>⬇ Install Aplikasi</button>
-    <div class="cards">
-      <button class="cardbtn" onclick="masuk('code')"><span class="cicon">📋</span><span><b data-i18n="cardCode">Tempel Kode</b><br><small data-i18n="cardCodeDesc">HTML / Markdown / teks</small></span></button>
-      <button class="cardbtn" onclick="masuk('file')"><span class="cicon">📁</span><span><b data-i18n="cardFile">Upload File</b><br><small data-i18n="cardFileDesc">HTML • TXT • MD • SVG • foto</small></span></button>
-      <button class="cardbtn" onclick="masuk('url')"><span class="cicon">🌐</span><span><b data-i18n="cardUrl">Dari URL</b><br><small data-i18n="cardUrlDesc">Artikel & halaman web</small></span></button>
-    </div>
-    <p class="hint steps" data-i18n="steps">Alur: 1) Input → 2) Pratinjau → 3) Simpan PDF</p>
-  </div>
+<header>📄 Konverter <span>Dunta</span></header>
+<main>
+<section id="pg-home" class="page active">
+<h2>Home</h2>
+<p style="color:var(--mut)">Ubah HTML, teks, Markdown, foto, atau halaman web menjadi PDF rapi.</p>
+<button class="cardbtn" onclick="go('input')"><b>📥 Mulai Konversi</b><small>Paste kode • upload file • dari URL</small></button>
+<button class="cardbtn" onclick="go('preview')"><b>👁 Pratinjau Terakhir</b><small>Lihat / simpan hasil proses</small></button>
 </section>
-
-<section id="screenInput" class="screen">
-  <div class="ui">
-    <h2 class="screentitle" data-i18n="inputTitle">Input</h2>
-    <div class="tabs">
-      <button id="tabCode" class="active" onclick="pilihTab('code')" data-i18n="tabCode">Tempel Kode</button>
-      <button id="tabFile" onclick="pilihTab('file')" data-i18n="tabFile">Upload File</button>
-      <button id="tabUrl" onclick="pilihTab('url')" data-i18n="tabUrl">Dari URL</button>
-    </div>
-    <div id="panelCode">
-      <textarea id="kode" data-i18n-ph="ph" placeholder="Tempel kode HTML di sini..."></textarea>
-    </div>
-    <div id="panelFile" style="display:none">
-      <div class="filebox">
-        <label for="file" data-i18n="fileLabel">PILIH FILE</label>
-        <input type="file" id="file" accept=".html,.htm,.txt,.md,.markdown,.svg,.jpg,.jpeg,.png" multiple>
-        <p class="hint" data-i18n="fileHint">HTML • TXT • Markdown • SVG • JPG/PNG</p>
-        <p id="namaFile"></p>
-      </div>
-    </div>
-    <div id="panelUrl" style="display:none">
-      <div class="urlbox">
-        <input type="url" id="url" data-i18n-ph="urlPh" placeholder="https://contoh.com/artikel">
-        <button id="btnUrl" onclick="ambilUrl()" data-i18n="urlBtn">Ambil</button>
-      </div>
-      <p id="statusUrl" class="hint"></p>
-    </div>
-    <div class="actions">
-      <select id="ukuran" onchange="gantiUkuran()">
-        <option value="A5" data-i18n="optA5">📏 A5 (Buku)</option>
-        <option value="A4" data-i18n="optA4">📏 A4 (Dokumen)</option>
-        <option value="letter" data-i18n="optLetter">📏 Letter</option>
-      </select>
-      <select id="gaya" onchange="pratinjau()">
-        <option value="buku" data-i18n="gayaBuku">📖 Gaya Buku</option>
-        <option value="asli" data-i18n="gayaAsli">🎨 Gaya Asli</option>
-      </select>
-      <button id="btnProses" class="wide" onclick="proses()" data-i18n="proses">➡ Proses</button>
-    </div>
-  </div>
+<section id="pg-input" class="page">
+<h2>Input</h2>
+<div class="tabs">
+<button id="t-paste" onclick="tab('paste')">Paste Code</button>
+<button id="t-file" onclick="tab('file')">Upload File</button>
+<button id="t-url" onclick="tab('url')">From URL</button>
+</div>
+<div id="p-paste" class="panel"><textarea id="code" placeholder="Tempel HTML / Markdown / teks di sini…"></textarea></div>
+<div id="p-file" class="panel hidden">
+<label class="ybtn" style="width:auto;display:inline-block;padding:14px 26px" for="file">📁 CHOOSE FILE</label>
+<input type="file" id="file" class="hidden" accept=".html,.htm,.txt,.md,.svg,image/png,image/jpeg">
+<div id="fname">Belum ada file dipilih.</div>
+<button class="gbtn" onclick="resetFile()">🔄 Ganti / Hapus File</button>
+</div>
+<div id="p-url" class="panel hidden"><input type="url" id="url" placeholder="https://contoh.com/artikel"></div>
+<div class="row">
+<select id="size"><option value="a4">📏 A4</option><option value="a5" selected>📏 A5 (Book)</option></select>
+<select id="style"><option value="book" selected>📖 Book Style</option><option value="plain">📄 Plain</option></select>
+</div>
+<div id="status"></div>
+<button class="ybtn" onclick="process()">➡ Process</button>
 </section>
-
-<section id="screenPreview" class="screen">
-  <div class="ui">
-    <h2 class="screentitle" data-i18n="previewTitle">Pratinjau & PDF</h2>
-    <p id="emptyPrev" class="hint" style="display:none" data-i18n="emptyPrev">Belum ada pratinjau. Proses dulu dari layar Input.</p>
-    <div class="prevactions">
-      <button id="btnPdf" onclick="jadikanPdf()" data-i18n="pdf">📄 PDF</button>
-      <button id="btnBack" onclick="bukaLayar('input')" data-i18n="editBack">✏ Kembali Edit</button>
-    </div>
-  </div>
-  <div id="book"></div>
-  <iframe id="frame" title="preview" hidden></iframe>
-  <!-- ═══ SLOT IKLAN ═══ Saat monetisasi: tempel kode AdSense DI DALAM div ini. Tidak ikut tercetak ke PDF. -->
-  <div id="ad-slot" class="ui"></div>
+<section id="pg-preview" class="page">
+<h2>Preview</h2>
+<div id="status2"></div>
+<button class="gbtn" onclick="go('input')">← Kembali / Ganti Input</button>
+<button class="gbtn" onclick="clearAll()">🗑 Bersihkan</button>
+<button class="ybtn" onclick="savePDF()">💾 Save PDF</button>
+<div id="pvWrap"><em style="color:#666">Belum ada pratinjau. Isi input lalu tekan Process.</em></div>
 </section>
-
-<section id="screenMore" class="screen">
-  <div class="ui">
-    <h2 class="screentitle" data-i18n="navMore">Lainnya</h2>
-    <div class="morelist">
-      <div class="morerow">
-        <span data-i18n="moreLang">Bahasa</span>
-        <span>
-          <button id="btnID" class="langbtn active" onclick="setLang('id')">ID</button>
-          <button id="btnEN" class="langbtn" onclick="setLang('en')">EN</button>
-        </span>
-      </div>
-      <button class="morerow" onclick="bukaModal('modalPrivasi')"><span data-i18n="mPrivasi">🔒 Kebijakan Privasi</span></button>
-      <button class="morerow" onclick="bukaModal('modalTentang')"><span data-i18n="mTentang">ℹ️ Tentang</span></button>
-      <button class="morerow" onclick="bagikan()"><span data-i18n="mBagikan">📤 Bagikan Aplikasi</span></button>
-      <button class="morerow js-install" onclick="pasang()" hidden><span data-i18n="install">⬇ Install Aplikasi</span></button>
-      <p class="hint version" data-i18n="version">Versi 3.0.0</p>
-    </div>
-  </div>
+<section id="pg-more" class="page">
+<h2>More</h2>
+<button class="cardbtn" onclick="hardReload()"><b>🔄 Muat Ulang Aplikasi</b><small>Pakai setelah ada pembaruan dari GitHub</small></button>
+<button class="cardbtn" onclick="clearAll()"><b>🗑 Hapus Semua Data</b><small>Reset pratinjau & input</small></button>
+<p style="color:var(--mut);font-size:13px">Konverter Dunta v2 • dunta12 • data diproses di perangkatmu.</p>
 </section>
-
-<nav id="bottomNav" class="ui">
-  <button class="navbtn active" id="navHome" onclick="bukaLayar('home')"><span>🏠</span><small data-i18n="navHome">Beranda</small></button>
-  <button class="navbtn" id="navInput" onclick="bukaLayar('input')"><span>📥</span><small data-i18n="navInput">Input</small></button>
-  <button class="navbtn" id="navPreview" onclick="bukaLayar('preview')"><span>👁</span><small data-i18n="navPreview">Pratinjau</small></button>
-  <button class="navbtn" id="navMore" onclick="bukaLayar('more')"><span>⚙️</span><small data-i18n="navMore">Lainnya</small></button>
+</main>
+<nav>
+<button onclick="go('home')" id="n-home"><div>🏠</div>Home</button>
+<button onclick="go('input')" id="n-input"><div>📥</div>Input</button>
+<button onclick="go('preview')" id="n-preview"><div>👁</div>Preview</button>
+<button onclick="go('more')" id="n-more"><div>⚙️</div>More</button>
 </nav>
-
-<div id="modalPrivasi" class="modal ui" onclick="if(event.target===this)tutupModal('modalPrivasi')">
-  <div class="card">
-    <h3 data-i18n="privTitle">Kebijakan Privasi</h3>
-    <p data-i18n="priv1">Konverter Dunta memproses semua file langsung di perangkat Anda. Kode, dokumen, dan foto Anda tidak diunggah ke server mana pun.</p>
-    <p data-i18n="priv2">Aplikasi tidak mengumpulkan atau membagikan data pribadi. Jika iklan diaktifkan di kemudian hari, penyedia iklan (mis. Google AdSense) dapat menggunakan cookie sesuai kebijakan mereka sendiri.</p>
-    <button class="closebtn" onclick="tutupModal('modalPrivasi')" data-i18n="close">Tutup</button>
-  </div>
-</div>
-
-<div id="modalTentang" class="modal ui" onclick="if(event.target===this)tutupModal('modalTentang')">
-  <div class="card">
-    <h3 data-i18n="aboutTitle">Tentang</h3>
-    <p data-i18n="about1">Konverter Dunta v3.0.0
-Mengubah HTML, teks, Markdown, foto, dan halaman web menjadi PDF yang cantik.
-Dibuat dengan ❤ oleh Dunta.</p>
-    <button class="closebtn" onclick="tutupModal('modalTentang')" data-i18n="close">Tutup</button>
-  </div>
-</div>
-
-<div id="toast" class="ui"></div>
-<script src="script.js"></script>
+<script>
+let curHTML='';
+const $=id=>document.getElementById(id);
+function go(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));$('pg-'+p).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));$('n-'+p).classList.add('active');setStatus('');}
+function tab(t){['paste','file','url'].forEach(x=>{$('t-'+x).classList.toggle('active',x===t);$('p-'+x).classList.toggle('hidden',x!==t);});}
+function setStatus(s){$('status').textContent=s;$('status2').textContent=s;}
+function resetFile(){$('file').value='';$('fname').textContent='Belum ada file dipilih.';}
+function clearAll(){curHTML='';$('code').value='';$('url').value='';resetFile();$('pvWrap').innerHTML='<em style="color:#666">Belum ada pratinjau.</em>';setStatus('');go('home');}
+function hardReload(){setStatus('Memuat ulang…');if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update()));}setTimeout(()=>location.reload(true),800);}
+$('file').addEventListener('change',e=>{const f=e.target.files[0];$('fname').textContent=f?('Selected: '+f.name):'Belum ada file dipilih.';});
+function wrap(b){return $('style').value==='book'?'<div style="font-family:Georgia,serif;font-size:15px;line-height:1.7;text-align:justify">'+b+'</div>':'<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6">'+b+'</div>';}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fromText(t){if(/<([a-z][\s\S]*?)>/i.test(t))return t;if(window.marked)return marked.parse(t);return '<pre style="white-space:pre-wrap">'+esc(t)+'</pre>';}
+async function process(){
+setStatus('Memproses…');
+let html='';
+const act=document.querySelector('.tabs button.active').id.replace('t-','');
+try{
+if(act==='paste'){const t=$('code').value.trim();if(!t)return setStatus('⚠ Isi dulu kode/teksnya.');html=fromText(t);}
+else if(act==='file'){const f=$('file').files[0];if(!f)return setStatus('⚠ Pilih file dulu.');
+if(/image\/(png|jpeg)/.test(f.type)){const r=await new Promise(res=>{const rd=new FileReader();rd.onload=()=>res(rd.result);rd.readAsDataURL(f);});html='<img src="'+r+'">';}
+else{html=fromText(await f.text());}
+$('file').value='';$('fname').textContent='File diproses. Pilih file lain kapan saja.';}
+else{let u=$('url').value.trim();if(!u)return setStatus('⚠ Isi dulu URL-nya.');if(!/^https?:\/\//i.test(u))u='https://'+u;html=await fetchURL(u);}
+curHTML=DOMPurify.sanitize(html);
+$('pvWrap').innerHTML=wrap(curHTML);
+go('preview');setStatus('✅ Pratinjau siap.');
+}catch(err){setStatus('❌ '+(err.message||'Gagal memproses.'));}
+}
+async function fetchURL(u){
+const px=[x=>'https://api.allorigins.win/raw?url='+encodeURIComponent(x),x=>'https://corsproxy.io/?url='+encodeURIComponent(x)];
+for(const p of px){setStatus('⏳ Mengambil halaman… (±10-20 detik)');
+try{const c=new AbortController();const to=setTimeout(()=>c.abort(),25000);
+const r=await fetch(p(u),{signal:c.signal});clearTimeout(to);
+if(r.ok){const t=await r.text();if(t)return t;}}catch(e){}}
+throw new Error('URL tidak bisa diambil. Coba Paste Code atau Upload File.');
+}
+function savePDF(){if(!curHTML)return setStatus('⚠ Belum ada pratinjau.');
+setStatus('⏳ Menyimpan PDF… mohon tunggu');
+const opt={margin:10,filename:'KonverterDunta.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,windowWidth:800},jsPDF:{unit:'mm',format:$('size').value==='a5'?'a5':'a4'}};
+html2pdf().set(opt).from($('pvWrap')).save().then(()=>setStatus('✅ PDF tersimpan di Download.')).catch(()=>setStatus('❌ Gagal menyimpan PDF.'));
+}
+tab('paste');
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
 </body>
 </html>
