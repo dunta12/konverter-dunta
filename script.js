@@ -356,3 +356,8 @@ if('serviceWorker' in navigator){
 
 try{var simpan=localStorage.getItem('duntaLang');if(simpan==='en'||simpan==='id'){lang=simpan;}}catch(e){}
 setLang(lang);
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
