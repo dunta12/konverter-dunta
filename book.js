@@ -40,7 +40,7 @@ var pages=[],ops=[],y=g.top;
 function left(){return g.H-g.bot-y;}
 function newPage(){if(ops.length)pages.push({ops:ops});ops=[];y=g.top;}
 blocks.forEach(function(b){
-var st=ST[b.type]||ST.p;
+var st=(b.type==='h'?ST['h'+Math.min(b.level||1,3)]:ST[b.type])||ST.p;
 var lh=MM(st.sz)*st.lh;
 doc.setFont(st.fam,st.sty);doc.setFontSize(st.sz);
 var cw=g.W-g.gut-g.out-(st.ind||0);
