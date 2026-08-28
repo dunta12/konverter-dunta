@@ -1,4 +1,4 @@
-const CACHE = 'kd-v3';
+const CACHE = 'kd-v4';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
